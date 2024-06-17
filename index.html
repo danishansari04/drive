@@ -75,6 +75,7 @@
     </style>
 </head>
 <body>
+
     <div class="container">
         <h1>Generate Video Player Link</h1>
         <label for="googleDriveLink">Google Drive Link:</label>
@@ -87,7 +88,7 @@
     </div>
 
     <script>
-        document.getElementById('generateLink').addEventListener('click', function () {
+        document.getElementById('generateLink').addEventListener('click', async function () {
             // User-provided Google Drive link
             var googleDriveLink = document.getElementById('googleDriveLink').value.trim();
 
@@ -108,17 +109,29 @@
             // Your Google API key
             var apiKey = "AIzaSyC8bHERX7qpvjqMJLpoyh2eODrnvZ9US1s";
 
-            // Generate the download URL with the API key
-            var directLink = "https://www.googleapis.com/drive/v3/files/" + fileId + "?alt=media&key=" + apiKey;
+            try {
+                // Fetch file metadata from Google Drive API
+                var metadataResponse = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?fields=name&key=${apiKey}`);
+                if (!metadataResponse.ok) {
+                    throw new Error("Failed to fetch file metadata");
+                }
+                var metadata = await metadataResponse.json();
+                var fileName = metadata.name;
 
-            // Create the intent URL for any video player
-            var videoPlayerIntent = "intent:" + directLink + "#Intent;type=video/*;end";
+                // Generate the download URL with the API key
+                var directLink = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${apiKey}`;
 
-            // Generate HTML code for the link
-            var code = '<a href="' + videoPlayerIntent + '">Play Video in Video Player</a>';
+                // Create the intent URL for any video player
+                var videoPlayerIntent = `intent:${directLink}#Intent;type=video/*;end`;
 
-            // Display the generated code in the textarea
-            document.getElementById('generatedCode').value = code;
+                // Generate HTML code for the link
+                var code = `<a href="${videoPlayerIntent}"> "${fileName}" </a>`;
+
+                // Display the generated code in the textarea
+                document.getElementById('generatedCode').value = code;
+            } catch (error) {
+                alert("An error occurred while fetching the file details. Please try again.");
+            }
         });
 
         document.getElementById('copyCode').addEventListener('click', function () {

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate and Copy Video Player Link</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #004085;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #004085;
+        }
+        input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 2px solid #004085;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        button {
+            background: #004085;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 2px solid #004085;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 14px;
+            resize: none;
+            background-color: #f7f9fb;
+            color: #004085;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Generate Video Player Link</h1>
+        <label for="googleDriveLink">Google Drive Link:</label>
+        <input type="text" id="googleDriveLink" placeholder="Enter Google Drive link here">
+        <div class="btn-container">
+            <button id="generateLink">Generate Link</button>
+            <button id="copyCode">Copy Code</button>
+        </div>
+        <textarea id="generatedCode" rows="4" cols="50" readonly></textarea>
+    </div>
+
+    <script>
+        document.getElementById('generateLink').addEventListener('click', function () {
+            // User-provided Google Drive link
+            var googleDriveLink = document.getElementById('googleDriveLink').value.trim();
+
+            // Check if input is not empty
+            if (!googleDriveLink) {
+                alert("Please enter a Google Drive link.");
+                return;
+            }
+
+            // Extract file ID from the link
+            var match = googleDriveLink.match(/\/d\/(.*?)\//);
+            if (!match) {
+                alert("Invalid Google Drive link format.");
+                return;
+            }
+            var fileId = match[1];
+
+            // Your Google API key
+            var apiKey = "AIzaSyC8bHERX7qpvjqMJLpoyh2eODrnvZ9US1s";
+
+            // Generate the download URL with the API key
+            var directLink = "https://www.googleapis.com/drive/v3/files/" + fileId + "?alt=media&key=" + apiKey;
+
+            // Create the intent URL for any video player
+            var videoPlayerIntent = "intent:" + directLink + "#Intent;type=video/*;end";
+
+            // Generate HTML code for the link
+            var code = '<a href="' + videoPlayerIntent + '">Play Video in Video Player</a>';
+
+            // Display the generated code in the textarea
+            document.getElementById('generatedCode').value = code;
+        });
+
+        document.getElementById('copyCode').addEventListener('click', function () {
+            // Copy the generated code to the clipboard
+            var generatedCode = document.getElementById('generatedCode');
+            generatedCode.select();
+            document.execCommand('copy');
+            alert("Code copied to clipboard!");
+        });
+    </script>
+</body>
+</html>
